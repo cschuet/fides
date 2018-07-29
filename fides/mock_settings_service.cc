@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fides/mock_settings_service.h"
-
 #include <string>
 
 #include "fides/identifier_utils.h"
+#include "fides/mock_settings_service.h"
 
 namespace fides {
 
@@ -27,11 +26,13 @@ const std::set<Key> MockSettingsService::GetKeys(const Key& prefix) const {
 }
 
 void MockSettingsService::AddSettingsObserver(SettingsObserver* observer) {
-  observers_.AddObserver(observer);
+  absl::WriterMutexLock writer_lock(&observers_mutex_);
+  observers_.insert(observer);
 }
 
 void MockSettingsService::RemoveSettingsObserver(SettingsObserver* observer) {
-  observers_.RemoveObserver(observer);
+  absl::WriterMutexLock writer_lock(&observers_mutex_);
+  observers_.erase(observer);
 }
 
 void MockSettingsService::SetValue(const Key& key,
@@ -43,7 +44,10 @@ void MockSettingsService::SetValue(const Key& key,
 }
 
 void MockSettingsService::NotifyObservers(const std::set<Key>& keys) {
-  FOR_EACH_OBSERVER(SettingsObserver, observers_, OnSettingsChanged(keys));
+  absl::ReaderMutexLock reader_lock(&observers_mutex_);
+  for (auto &observer : observers_) {
+    observer->OnSettingsChanged(keys);
+  }
 }
 
 }  // namespace fides

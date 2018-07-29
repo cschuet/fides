@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-
 #include "fides/blob_ref.h"
 #include "fides/blob_store.h"
 #include "fides/key.h"

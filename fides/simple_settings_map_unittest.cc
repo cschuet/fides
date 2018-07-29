@@ -4,7 +4,6 @@
 
 #include "fides/simple_settings_map.h"
 
-#include <base/logging.h>
 #include <gtest/gtest.h>
 #include <memory>
 #include <string>
@@ -12,6 +11,7 @@
 #include "fides/identifier_utils.h"
 #include "fides/mock_settings_document.h"
 #include "fides/test_helpers.h"
+#include "glog/logging.h"
 
 namespace fides {
 

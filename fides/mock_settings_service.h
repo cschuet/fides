@@ -10,9 +10,8 @@
 #include <set>
 #include <string>
 
+#include "absl/synchronization/mutex.h"
 #include "base/macros.h"
-#include <base/observer_list.h>
-
 #include "fides/settings_service.h"
 
 namespace base {
@@ -40,7 +39,8 @@ class MockSettingsService : public SettingsService {
  private:
   std::map<Key, std::string> prefix_value_map_;
 
-  base::ObserverList<SettingsObserver> observers_;
+  absl::Mutex observers_mutex_;
+  std::set<SettingsObserver *> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(MockSettingsService);
 };

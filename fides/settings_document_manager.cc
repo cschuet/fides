@@ -15,6 +15,7 @@
 #include "fides/settings_document.h"
 #include "fides/settings_keys.h"
 #include "fides/settings_map.h"
+#include "glog/logging.h"
 
 namespace fides {
 
@@ -32,7 +33,7 @@ void UpdateSourceValidationQueue(
     // TODO(mnissler): handle nested sources properly.
     Key source_suffix;
     if (!source_key.Suffix(source_prefix, &source_suffix)) {
-      NOTREACHED() << "Bad source key " << source_key.ToString();
+      LOG(FATAL) << "Bad source key " << source_key.ToString();
       continue;
     }
     const std::string source_id = source_suffix.Split(nullptr).ToString();
@@ -129,12 +130,14 @@ const std::set<Key> SettingsDocumentManager::GetKeys(const Key& prefix) const {
 }
 
 void SettingsDocumentManager::AddSettingsObserver(SettingsObserver* observer) {
-  observers_.AddObserver(observer);
+  absl::WriterMutexLock writer_lock(&observers_mutex_);
+  observers_.insert(observer);
 }
 
 void SettingsDocumentManager::RemoveSettingsObserver(
     SettingsObserver* observer) {
-  observers_.RemoveObserver(observer);
+  absl::WriterMutexLock writer_lock(&observers_mutex_);
+  observers_.erase(observer);
 }
 
 SettingsDocumentManager::InsertionStatus SettingsDocumentManager::InsertBlob(
@@ -219,8 +222,10 @@ SettingsDocumentManager::InsertDocument(
   // Process any trust configuration changes.
   UpdateTrustConfiguration(&changed_keys);
 
-  FOR_EACH_OBSERVER(SettingsObserver, observers_,
-                    OnSettingsChanged(changed_keys));
+  absl::ReaderMutexLock reader_lock(&observers_mutex_);
+  for (auto &observer : observers_) {
+    observer->OnSettingsChanged(changed_keys);
+  }
   return kInsertionStatusSuccess;
 }
 

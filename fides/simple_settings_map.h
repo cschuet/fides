@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-
 #include "fides/settings_map.h"
 #include "fides/version_stamp.h"
 

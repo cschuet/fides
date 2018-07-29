@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fides/source.h"
-
-#include <base/logging.h>
-#include <base/strings/string_split.h>
 #include <string>
 
+#include "absl/strings/str_split.h"
 #include "fides/settings_document.h"
 #include "fides/settings_keys.h"
 #include "fides/settings_service.h"
+#include "fides/source.h"
+#include "glog/logging.h"
 
 namespace fides {
 
@@ -129,7 +128,7 @@ bool Source::Update(
     if (access_key.Suffix(access_key_prefix, &suffix))
       access_[suffix] = SettingStatusFromString(status_string);
     else
-      NOTREACHED() << "Invalid access key " << access_key.ToString();
+      LOG(FATAL) << "Invalid access key " << access_key.ToString();
   }
 
   blob_formats_.clear();
@@ -138,8 +137,7 @@ bool Source::Update(
   if (formats_value.valid()) {
     has_config = true;
     blob_formats_ =
-        base::SplitString(formats_value.ToString(), ",", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+        absl::StrSplit(formats_value.ToString(), ",", absl::SkipWhitespace());
   }
 
   return has_config;

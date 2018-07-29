@@ -7,14 +7,14 @@
 #include <algorithm>
 #include <deque>
 #include <functional>
+#include <gtest/gtest.h>
 #include <map>
 #include <memory>
 #include <set>
 #include <string>
 
-#include <base/files/scoped_temp_dir.h>
-#include <gtest/gtest.h>
-
+#include "boost/filesystem.hpp"
+#include "fides/file_utils.h"
 #include "fides/mock_locked_settings.h"
 #include "fides/mock_settings_document.h"
 #include "fides/settings_keys.h"
@@ -23,6 +23,7 @@
 #include "fides/source_delegate.h"
 #include "fides/test_helpers.h"
 #include "fides/version_stamp.h"
+#include "glog/logging.h"
 
 namespace fides {
 
@@ -186,14 +187,17 @@ class SettingsDocumentManagerTest : public testing::Test {
   }
 
   void SetUp() override {
-    ASSERT_TRUE(tmpdir_.CreateUniqueTempDir());
+    temp_dir_path_ = boost::filesystem::temp_directory_path().string() + "/" +
+                     boost::filesystem::unique_path().string();
+    utils::CreateDirectory(temp_dir_path_);
     ReinitializeSettingsDocumentManager();
   }
 
+  void TearDown() override { boost::filesystem::remove_all(temp_dir_path_); }
+
   void ReinitializeSettingsDocumentManager() {
     manager_.reset(new SettingsDocumentManager(
-        std::ref(parser_), std::ref(source_delegate_factory_),
-        tmpdir_.path().value(),
+        std::ref(parser_), std::ref(source_delegate_factory_), temp_dir_path_,
         std::unique_ptr<SettingsMap>(new SimpleSettingsMap()),
         CreateInitialTrustedSettingsDocument()));
     manager_->Init();
@@ -296,7 +300,7 @@ class SettingsDocumentManagerTest : public testing::Test {
               InsertDocument(std::move(document), kTestSource0, {{}}));
   }
 
-  base::ScopedTempDir tmpdir_;
+  std::string temp_dir_path_;
   std::vector<std::unique_ptr<LockedSettingsContainer>> containers_;
   MockSettingsBlobParser parser_;
   SourceDelegateFactory source_delegate_factory_;

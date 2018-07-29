@@ -12,9 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "absl/synchronization/mutex.h"
 #include "base/macros.h"
-#include <base/observer_list.h>
-
 #include "fides/blob_ref.h"
 #include "fides/blob_store.h"
 #include "fides/settings_blob_parser.h"
@@ -195,7 +194,8 @@ class SettingsDocumentManager : public SettingsService {
   // The underlying settings map that tracks effective configuration.
   std::unique_ptr<SettingsMap> settings_map_;
 
-  base::ObserverList<SettingsObserver> observers_;
+  absl::Mutex observers_mutex_;
+  std::set<SettingsObserver *> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsDocumentManager);
 };

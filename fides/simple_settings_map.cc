@@ -6,10 +6,9 @@
 
 #include <algorithm>
 
-#include <base/logging.h>
-
 #include "fides/identifier_utils.h"
 #include "fides/settings_document.h"
+#include "glog/logging.h"
 
 namespace fides {
 

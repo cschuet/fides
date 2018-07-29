@@ -5,13 +5,13 @@
 #ifndef FIDES_SETTINGS_MAP_H_
 #define FIDES_SETTINGS_MAP_H_
 
-#include "base/macros.h"
 #include <map>
 #include <memory>
 #include <set>
 #include <string>
 #include <vector>
 
+#include "base/macros.h"
 #include "fides/blob_ref.h"
 #include "fides/settings_document.h"
 

@@ -27,6 +27,10 @@ enum FileType {
 std::vector<std::string> ListEntries(const std::string& path, int file_type) {
   std::vector<std::string> entries;
   boost::filesystem::path p (path);
+  if (!boost::filesystem::exists(p) || !boost::filesystem::is_directory(p)) {
+    return {};
+  }
+
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr(p); itr != end_itr; ++itr)
   {

@@ -68,3 +68,9 @@ http_archive(
     strip_prefix = "benchmark-16703ff83c1ae6d53e5155df3bb3ab0bc96083be",
     sha256 = "59f918c8ccd4d74b6ac43484467b500f1d64b40cc1010daa055375b322a43ba3",
 )
+
+http_archive(
+    name = "boringssl",
+    # on the chromium-stable-with-bazel branch
+    url = "https://boringssl.googlesource.com/boringssl/+archive/dcd3e6e6ecddf059adb48fca45bc7346a108bdd9.tar.gz",
+)

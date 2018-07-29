@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fides/crypto.h"
-
-#include <stdint.h>
 
 #include <memory>
+#include <stdint.h>
 
-#include <base/logging.h>
-
-#include <openssl/crypto.h>
-#include <openssl/evp.h>
+#include "fides/crypto.h"
+#include "glog/logging.h"
+#include "src/include/openssl/crypto.h"
+#include "src/include/openssl/evp.h"
 
 namespace fides {
 namespace crypto {
