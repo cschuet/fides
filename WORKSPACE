@@ -10,8 +10,6 @@ http_archive(
       ],
 )
 
-# This can't be inside cartographer_repositories() because of:
-# https://github.com/bazelbuild/bazel/issues/1550
 load("@com_github_nelhage_boost//:boost/boost.bzl", "boost_deps")
 
 boost_deps()
